@@ -1,5 +1,7 @@
 package com.LetsPlay.service;
 
+import com.LetsPlay.model.Product;
+import com.LetsPlay.repository.ProductRepository;
 import com.LetsPlay.repository.UserRepository;
 import com.LetsPlay.model.User;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
     //private PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
@@ -44,7 +50,10 @@ public class UserService {
         //String hashedPassword = passwordEncoder.encode(user.getPassword());
         //user.setPassword(hashedPassword);
         user.setId(UUID.randomUUID().toString().split("-")[0]);
-        return userRepository.save(user);
+        user.setRole(user.getRole().toUpperCase());
+        userRepository.save(user);
+        user.setPassword(null);
+        return user;
     }
 
     public boolean findUserById(String userId) {
@@ -62,10 +71,18 @@ public class UserService {
         //String hashedPassword = passwordEncoder.encode(user.getPassword());
         //user.setPassword(hashedPassword);
         user.setId(userId);
-        return userRepository.save(user);
+        user.setRole(user.getRole().toUpperCase());
+        userRepository.save(user);
+        user.setPassword(null);
+        return user;
     }
 
-    public void deleteUser(String userId) {
+    public String deleteUser(String userId) {
+        List<Product> products = productRepository.findProductsByUserId(userId);
+        for (Product product: products) {
+            productRepository.deleteById(product.getId());
+        }
         userRepository.deleteById(userId);
+        return "Delete of user with id " + userId + " successful";
     }
 }

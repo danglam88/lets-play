@@ -76,8 +76,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
-            userService.deleteUser(userId);
-            return ResponseEntity.noContent().build();
+            String status = userService.deleteUser(userId);
+            return ResponseEntity.ok(status);
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse("Deletion of user with id " + userId + " failed");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

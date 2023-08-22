@@ -76,8 +76,8 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
-            productService.deleteProduct(productId);
-            return ResponseEntity.noContent().build();
+            String status = productService.deleteProduct(productId);
+            return ResponseEntity.ok(status);
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse("Deletion of product with id " + productId + " failed");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

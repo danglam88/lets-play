@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface ProductRepository extends MongoRepository<Product, String> {
     Optional<Product> findProductByName(String name);
-    List<Product> findProductsByPrice(double price);
+    List<Product> findProductsByPrice(Double price);
     List<Product> findProductsByUserId(String userId);
 }
