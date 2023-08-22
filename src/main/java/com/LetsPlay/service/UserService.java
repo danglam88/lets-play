@@ -47,8 +47,8 @@ public class UserService {
                 || (!user.getRole().equalsIgnoreCase("admin") && !user.getRole().equalsIgnoreCase("user"))) {
             return null;
         }
-        //String hashedPassword = passwordEncoder.encode(user.getPassword());
-        //user.setPassword(hashedPassword);
+        /*String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);*/
         user.setId(UUID.randomUUID().toString().split("-")[0]);
         user.setRole(user.getRole().toUpperCase());
         userRepository.save(user);
@@ -68,8 +68,8 @@ public class UserService {
                 || (!user.getRole().equalsIgnoreCase("admin") && !user.getRole().equalsIgnoreCase("user"))) {
             return null;
         }
-        //String hashedPassword = passwordEncoder.encode(user.getPassword());
-        //user.setPassword(hashedPassword);
+        /*String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);*/
         user.setId(userId);
         user.setRole(user.getRole().toUpperCase());
         userRepository.save(user);
