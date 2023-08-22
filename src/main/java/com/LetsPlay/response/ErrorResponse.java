@@ -1,4 +1,4 @@
-package com.LetsPlay;
+package com.LetsPlay.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

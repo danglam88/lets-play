@@ -1,6 +1,10 @@
-package com.LetsPlay;
+package com.LetsPlay.controller;
 
+import com.LetsPlay.response.ErrorResponse;
+import com.LetsPlay.service.ProductService;
+import com.LetsPlay.model.Product;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,11 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/products")
+@RequestMapping("/products")
 @AllArgsConstructor
 public class ProductController {
 
-    private final ProductService productService;
+    @Autowired
+    private ProductService productService;
 
     @GetMapping
     public List<Product> getAllProducts() {
@@ -34,7 +39,11 @@ public class ProductController {
     public ResponseEntity<?> createProduct(@RequestBody Product product) {
         try {
             Product createdProduct = productService.createProduct(product);
-            return ResponseEntity.ok(createdProduct);
+            if (createdProduct == null) {
+                ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -49,6 +58,10 @@ public class ProductController {
         }
         try {
             Product updatedProduct = productService.updateProduct(productId, product);
+            if (updatedProduct == null) {
+                ErrorResponse errorResponse = new ErrorResponse("Update of product with id " + productId + " failed");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
             return ResponseEntity.ok(updatedProduct);
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse("Update of product with id " + productId + " failed");
