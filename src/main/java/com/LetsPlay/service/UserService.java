@@ -23,7 +23,8 @@ public class UserService {
     @Autowired
     private ProductRepository productRepository;
 
-    //private PasswordEncoder passwordEncoder;
+    /*@Autowired
+    private PasswordEncoder passwordEncoder;*/
 
     public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
