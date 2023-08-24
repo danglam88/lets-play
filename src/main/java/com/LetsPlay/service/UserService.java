@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +29,8 @@ public class UserService {
     @Autowired
     private ModelMapper modelMapper;
 
-    /*@Autowired
-    private PasswordEncoder passwordEncoder;*/
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserDTO convertToDto(User user) {
         return modelMapper.map(user, UserDTO.class);
@@ -65,8 +65,8 @@ public class UserService {
         if (user.hasDuplicatedEmail(null)) {
             return new User();
         }
-        /*String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);*/
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
         user.setId(UUID.randomUUID().toString().split("-")[0]);
         user.setRole(user.getRole().toUpperCase());
         return userRepository.save(user);
@@ -91,8 +91,8 @@ public class UserService {
         if (user.hasDuplicatedEmail(userId)) {
             return new User();
         }
-        /*String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);*/
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashedPassword);
         user.setId(userId);
         user.setRole(user.getRole().toUpperCase());
         return userRepository.save(user);
