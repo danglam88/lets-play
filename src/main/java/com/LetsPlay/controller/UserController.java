@@ -46,7 +46,10 @@ public class UserController {
             User.fetchAllUsers(userService.getAllUsers());
             User createdUser = userService.createUser(user);
             if (createdUser == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed, check your input");
+                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed:" +
+                        " no any field can be empty (or contain only spaces)," +
+                        " every field must have at most 50 characters," +
+                        " password must have at least 8 characters");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (createdUser.getId() == null) {
@@ -69,8 +72,10 @@ public class UserController {
             User.fetchAllUsers(userService.getAllUsers());
             User updatedUser = userService.updateUser(userId, user);
             if (updatedUser == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Update of user with id "
-                        + userId + " failed, check your input");
+                ErrorResponse errorResponse = new ErrorResponse("Update of user with id " + userId + " failed:" +
+                        " no any field can be empty (or contain only spaces)," +
+                        " every field must have at most 50 characters," +
+                        " password must have at least 8 characters");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (updatedUser.getId() == null) {

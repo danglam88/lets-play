@@ -51,12 +51,15 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (user.getName() == null || user.getName().trim().isEmpty()
-                || user.getEmail() == null || user.getEmail().trim().isEmpty() || !user.hasValidEmail()
-                || user.getPassword() == null || user.getPassword().trim().isEmpty()
-                || user.getRole() == null || user.getRole().trim().isEmpty()
-                || (!user.getRole().equalsIgnoreCase("admin")
-                && !user.getRole().equalsIgnoreCase("user"))) {
+        if (user.getName() == null
+                || user.getName().trim().isEmpty() || user.getName().trim().length() > 50
+                || user.getEmail() == null
+                || !user.hasValidEmail() || user.getEmail().trim().length() > 50
+                || user.getPassword() == null
+                || user.getPassword().trim().length() < 8 || user.getPassword().trim().length() > 50
+                || user.getRole() == null
+                || (!user.getRole().trim().equalsIgnoreCase("admin")
+                && !user.getRole().trim().equalsIgnoreCase("user"))) {
             return null;
         }
         if (user.hasDuplicatedEmail(null)) {
@@ -74,12 +77,15 @@ public class UserService {
     }
 
     public User updateUser(String userId, User user) {
-        if (user.getName() == null || user.getName().trim().isEmpty()
-                || user.getEmail() == null || user.getEmail().trim().isEmpty() || !user.hasValidEmail()
-                || user.getPassword() == null || user.getPassword().trim().isEmpty()
-                || user.getRole() == null || user.getRole().trim().isEmpty()
-                || (!user.getRole().equalsIgnoreCase("admin")
-                && !user.getRole().equalsIgnoreCase("user"))) {
+        if (user.getName() == null
+                || user.getName().trim().isEmpty() || user.getName().trim().length() > 50
+                || user.getEmail() == null
+                || !user.hasValidEmail() || user.getEmail().trim().length() > 50
+                || user.getPassword() == null
+                || user.getPassword().trim().length() < 8 || user.getPassword().trim().length() > 50
+                || user.getRole() == null
+                || (!user.getRole().trim().equalsIgnoreCase("admin")
+                && !user.getRole().trim().equalsIgnoreCase("user"))) {
             return null;
         }
         if (user.hasDuplicatedEmail(userId)) {
@@ -93,7 +99,7 @@ public class UserService {
     }
 
     public String deleteUser(String userId) {
-        List<Product> products = productRepository.findProductsByUserId(userId);
+        List<Product> products = productRepository.findByUserId(userId);
         for (Product product: products) {
             productRepository.deleteById(product.getId());
         }
