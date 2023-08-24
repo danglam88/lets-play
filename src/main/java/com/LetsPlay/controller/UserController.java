@@ -21,8 +21,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<?> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        if (users.size() > 0) {
+            return ResponseEntity.ok(users);
+        }
+        ErrorResponse errorResponse = new ErrorResponse("No users exist in the system yet");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @GetMapping("/{userId}")

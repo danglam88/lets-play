@@ -1,5 +1,6 @@
 package com.LetsPlay.controller;
 
+import com.LetsPlay.model.User;
 import com.LetsPlay.response.ErrorResponse;
 import com.LetsPlay.service.ProductService;
 import com.LetsPlay.model.Product;
@@ -21,8 +22,13 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<?> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        if (products.size() > 0) {
+            return ResponseEntity.ok(products);
+        }
+        ErrorResponse errorResponse = new ErrorResponse("No products exist in the system yet");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @GetMapping("/{productId}")
