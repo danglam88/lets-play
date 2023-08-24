@@ -1,6 +1,5 @@
 package com.LetsPlay.controller;
 
-import com.LetsPlay.model.User;
 import com.LetsPlay.response.ErrorResponse;
 import com.LetsPlay.service.ProductService;
 import com.LetsPlay.model.Product;
@@ -46,13 +45,12 @@ public class ProductController {
         try {
             Product createdProduct = productService.createProduct(product);
             if (createdProduct == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed");
+                ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed, check your input");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -65,13 +63,13 @@ public class ProductController {
         try {
             Product updatedProduct = productService.updateProduct(productId, product);
             if (updatedProduct == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Update of product with id " + productId + " failed");
+                ErrorResponse errorResponse = new ErrorResponse("Update of product with id "
+                        + productId + " failed, check your input");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.ok(updatedProduct);
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Update of product with id " + productId + " failed");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -85,8 +83,7 @@ public class ProductController {
             String status = productService.deleteProduct(productId);
             return ResponseEntity.ok(status);
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Deletion of product with id " + productId + " failed");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

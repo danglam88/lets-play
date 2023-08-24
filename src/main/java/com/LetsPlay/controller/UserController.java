@@ -24,7 +24,7 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (users.size() > 0) {
-            return ResponseEntity.ok(users);
+            return ResponseEntity.ok(userService.convertToDtos(users));
         }
         ErrorResponse errorResponse = new ErrorResponse("No users exist in the system yet");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         Optional<User> user = userService.getUserById(userId);
         if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
+            return ResponseEntity.ok(userService.convertToDto(user.get()));
         }
         ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -43,15 +43,19 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
+            User.fetchAllUsers(userService.getAllUsers());
             User createdUser = userService.createUser(user);
             if (createdUser == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed");
+                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed, check your input");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+            if (createdUser.getId() == null) {
+                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed due to duplicated email");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToDto(createdUser));
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -62,15 +66,21 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
+            User.fetchAllUsers(userService.getAllUsers());
             User updatedUser = userService.updateUser(userId, user);
             if (updatedUser == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Update of user with id " + userId + " failed");
+                ErrorResponse errorResponse = new ErrorResponse("Update of user with id "
+                        + userId + " failed, check your input");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.ok(updatedUser);
+            if (updatedUser.getId() == null) {
+                ErrorResponse errorResponse = new ErrorResponse("Update of user with id "
+                        + userId + " failed due to duplicated email");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+            return ResponseEntity.ok(userService.convertToDto(updatedUser));
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Update of user with id " + userId + " failed");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -84,8 +94,7 @@ public class UserController {
             String status = userService.deleteUser(userId);
             return ResponseEntity.ok(status);
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Deletion of user with id " + userId + " failed");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

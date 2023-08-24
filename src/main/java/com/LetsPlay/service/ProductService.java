@@ -59,6 +59,6 @@ public class ProductService {
 
     public String deleteProduct(String productId) {
         productRepository.deleteById(productId);
-        return "Delete of product with id " + productId + " successful";
+        return "Delete of product with id " + productId + " successfully";
     }
 }
