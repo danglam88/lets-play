@@ -30,10 +30,13 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
-        if (product.getName() == null || product.getName().trim().isEmpty()
-                || product.getDescription() == null || product.getDescription().trim().isEmpty()
-                || product.getPrice() == null || product.getPrice().isNaN()
-                || product.getUserId() == null || product.getUserId().trim().isEmpty()
+        if (product.getName() == null
+                || product.getName().trim().isEmpty() || product.getName().trim().length() > 50
+                || product.getDescription() == null
+                || product.getDescription().trim().isEmpty() || product.getDescription().trim().length() > 50
+                || product.getPrice() == null
+                || product.getPrice().isNaN() || product.getPrice() <= 0 || product.getPrice() > 1000000000
+                || product.getUserId() == null
                 || !userRepository.existsById(product.getUserId())) {
             return null;
         }
@@ -46,10 +49,13 @@ public class ProductService {
     }
 
     public Product updateProduct(String productId, Product product) {
-        if (product.getName() == null || product.getName().trim().isEmpty()
-                || product.getDescription() == null || product.getDescription().trim().isEmpty()
-                || product.getPrice() == null || product.getPrice().isNaN()
-                || product.getUserId() == null || product.getUserId().trim().isEmpty()
+        if (product.getName() == null
+                || product.getName().trim().isEmpty() || product.getName().trim().length() > 50
+                || product.getDescription() == null
+                || product.getDescription().trim().isEmpty() || product.getDescription().trim().length() > 50
+                || product.getPrice() == null
+                || product.getPrice().isNaN() || product.getPrice() <= 0 || product.getPrice() > 1000000000
+                || product.getUserId() == null
                 || !userRepository.existsById(product.getUserId())) {
             return null;
         }

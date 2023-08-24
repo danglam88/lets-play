@@ -56,7 +56,7 @@ public class UserService {
                 || user.getEmail() == null
                 || !user.hasValidEmail() || user.getEmail().trim().length() > 50
                 || user.getPassword() == null
-                || user.getPassword().trim().length() < 8 || user.getPassword().trim().length() > 50
+                || user.getPassword().trim().length() < 6 || user.getPassword().trim().length() > 50
                 || user.getRole() == null
                 || (!user.getRole().trim().equalsIgnoreCase("admin")
                 && !user.getRole().trim().equalsIgnoreCase("user"))) {
@@ -82,7 +82,7 @@ public class UserService {
                 || user.getEmail() == null
                 || !user.hasValidEmail() || user.getEmail().trim().length() > 50
                 || user.getPassword() == null
-                || user.getPassword().trim().length() < 8 || user.getPassword().trim().length() > 50
+                || user.getPassword().trim().length() < 6 || user.getPassword().trim().length() > 50
                 || user.getRole() == null
                 || (!user.getRole().trim().equalsIgnoreCase("admin")
                 && !user.getRole().trim().equalsIgnoreCase("user"))) {

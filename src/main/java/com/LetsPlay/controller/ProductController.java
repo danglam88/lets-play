@@ -45,7 +45,10 @@ public class ProductController {
         try {
             Product createdProduct = productService.createProduct(product);
             if (createdProduct == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed, check your input");
+                ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed:" +
+                        " no any field can be empty (or contain only spaces)," +
+                        " every field must have at most 50 characters," +
+                        " price must be positive and not exceed 1000000000");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
@@ -64,7 +67,10 @@ public class ProductController {
             Product updatedProduct = productService.updateProduct(productId, product);
             if (updatedProduct == null) {
                 ErrorResponse errorResponse = new ErrorResponse("Update of product with id "
-                        + productId + " failed, check your input");
+                        + productId + " failed:" +
+                        " no any field can be empty (or contain only spaces)," +
+                        " every field must have at most 50 characters," +
+                        " price must be positive and not exceed 1000000000");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.ok(updatedProduct);
