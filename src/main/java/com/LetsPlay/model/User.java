@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Document(collection = "users")
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
