@@ -27,6 +27,7 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter authFilter;
 
+    @Bean
     public UserDetailsService userDetailsService() {
         return new UserInfoUserDetailsService();
     }
@@ -35,9 +36,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/products","/products/**").permitAll()
+                .requestMatchers("/auth").permitAll()
                 .and()
-                .authorizeHttpRequests().requestMatchers("/users", "/users/**")
+                .authorizeHttpRequests().requestMatchers("/users/**", "/products/**")
                 .authenticated().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
