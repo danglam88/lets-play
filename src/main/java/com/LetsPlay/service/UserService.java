@@ -58,8 +58,8 @@ public class UserService {
                 || user.getPassword() == null
                 || user.getPassword().trim().length() < 6 || user.getPassword().trim().length() > 50
                 || user.getRole() == null
-                || (!user.getRole().trim().equalsIgnoreCase("admin")
-                && !user.getRole().trim().equalsIgnoreCase("user"))) {
+                || (!user.getRole().trim().equalsIgnoreCase("ROLE_ADMIN")
+                && !user.getRole().trim().equalsIgnoreCase("ROLE_USER"))) {
             return null;
         }
         if (user.hasDuplicatedEmail(null)) {
@@ -84,8 +84,8 @@ public class UserService {
                 || user.getPassword() == null
                 || user.getPassword().trim().length() < 6 || user.getPassword().trim().length() > 50
                 || user.getRole() == null
-                || (!user.getRole().trim().equalsIgnoreCase("admin")
-                && !user.getRole().trim().equalsIgnoreCase("user"))) {
+                || (!user.getRole().trim().equalsIgnoreCase("ROLE_ADMIN")
+                && !user.getRole().trim().equalsIgnoreCase("ROLE_USER"))) {
             return null;
         }
         if (user.hasDuplicatedEmail(userId)) {

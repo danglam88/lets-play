@@ -32,6 +32,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> getProductById(@PathVariable String productId) {
         Optional<Product> product = productService.getProductById(productId);
         if (product.isPresent()) {
@@ -42,7 +43,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> createProduct(@RequestBody Product product) {
         try {
             Product createdProduct = productService.createProduct(product);
@@ -60,7 +61,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody Product product) {
         if (!productService.findProductById(productId)) {
             ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
@@ -83,7 +84,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> deleteProduct(@PathVariable String productId) {
         if (!productService.findProductById(productId)) {
             ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
