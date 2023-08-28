@@ -25,7 +25,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             return ResponseEntity.ok(userService.convertToDtos(users));
         }
         ErrorResponse errorResponse = new ErrorResponse("No users exist in the system yet");
