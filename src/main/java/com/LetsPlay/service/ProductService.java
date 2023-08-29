@@ -73,6 +73,6 @@ public class ProductService {
 
     public String deleteProduct(String productId) {
         productRepository.deleteById(productId);
-        return "Delete of product with id " + productId + " successfully";
+        return "Deletion of product with id " + productId + " successfully";
     }
 }

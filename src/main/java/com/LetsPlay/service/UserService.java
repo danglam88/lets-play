@@ -112,6 +112,6 @@ public class UserService {
             productRepository.deleteById(product.getId());
         }
         userRepository.deleteById(userId);
-        return "Delete of user with id " + userId + " (and all of their products if any) successfully";
+        return "Deletion of user with id " + userId + " (and all of their products if any) successfully";
     }
 }
