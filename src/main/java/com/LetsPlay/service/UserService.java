@@ -56,7 +56,7 @@ public class UserService {
                 || user.getEmail() == null
                 || !user.hasValidEmail() || user.getEmail().trim().length() > 50
                 || user.getPassword() == null
-                || user.getPassword().trim().length() < 6 || user.getPassword().trim().length() > 50
+                || user.getPassword().length() < 6 || user.getPassword().length() > 50
                 || user.getRole() == null
                 || (!user.getRole().trim().equalsIgnoreCase("ROLE_ADMIN")
                 && !user.getRole().trim().equalsIgnoreCase("ROLE_USER"))) {
@@ -65,10 +65,16 @@ public class UserService {
         if (user.hasDuplicatedEmail(null)) {
             return new User();
         }
+        String userId = "";
+        do {
+            userId = UUID.randomUUID().toString().split("-")[0];
+        } while (userRepository.existsById(userId));
+        user.setId(userId);
+        user.setName(user.getName().trim());
+        user.setEmail(user.getEmail().trim());
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
-        user.setId(UUID.randomUUID().toString().split("-")[0]);
-        user.setRole(user.getRole().toUpperCase());
+        user.setRole(user.getRole().trim().toUpperCase());
         return userRepository.save(user);
     }
 
@@ -82,7 +88,7 @@ public class UserService {
                 || user.getEmail() == null
                 || !user.hasValidEmail() || user.getEmail().trim().length() > 50
                 || user.getPassword() == null
-                || user.getPassword().trim().length() < 6 || user.getPassword().trim().length() > 50
+                || user.getPassword().length() < 6 || user.getPassword().length() > 50
                 || user.getRole() == null
                 || (!user.getRole().trim().equalsIgnoreCase("ROLE_ADMIN")
                 && !user.getRole().trim().equalsIgnoreCase("ROLE_USER"))) {
@@ -91,10 +97,12 @@ public class UserService {
         if (user.hasDuplicatedEmail(userId)) {
             return new User();
         }
+        user.setId(userId);
+        user.setName(user.getName().trim());
+        user.setEmail(user.getEmail().trim());
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
-        user.setId(userId);
-        user.setRole(user.getRole().toUpperCase());
+        user.setRole(user.getRole().trim().toUpperCase());
         return userRepository.save(user);
     }
 

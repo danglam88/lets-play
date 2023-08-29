@@ -40,7 +40,13 @@ public class ProductService {
                 || !userRepository.existsById(product.getUserId())) {
             return null;
         }
-        product.setId(UUID.randomUUID().toString().split("-")[0]);
+        String productId = "";
+        do {
+            productId = UUID.randomUUID().toString().split("-")[0];
+        } while (productRepository.existsById(productId));
+        product.setId(productId);
+        product.setName(product.getName().trim());
+        product.setDescription(product.getDescription().trim());
         return productRepository.save(product);
     }
 
@@ -60,6 +66,8 @@ public class ProductService {
             return null;
         }
         product.setId(productId);
+        product.setName(product.getName().trim());
+        product.setDescription(product.getDescription().trim());
         return productRepository.save(product);
     }
 

@@ -36,7 +36,7 @@ public class User {
         String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
 
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(this.getEmail());
+        Matcher matcher = pattern.matcher(this.getEmail().trim());
 
         return matcher.matches();
     }
@@ -44,7 +44,7 @@ public class User {
     public boolean hasDuplicatedEmail(String userId) {
         for (User user: allUsers) {
             if ((userId == null || !userId.equals(user.getId()))
-                    && this.getEmail().equalsIgnoreCase(user.getEmail())) {
+                    && this.getEmail().trim().equalsIgnoreCase(user.getEmail())) {
                 return true;
             }
         }
