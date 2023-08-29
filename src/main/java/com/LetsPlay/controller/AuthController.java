@@ -1,9 +1,12 @@
 package com.LetsPlay.controller;
 
 import com.LetsPlay.model.AuthRequest;
+import com.LetsPlay.response.Response;
 import com.LetsPlay.service.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,12 +28,13 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
+            return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
         } else {
-            throw new UsernameNotFoundException("Invalid user request");
+            Response errorResponse = new Response("Invalid username " + authRequest.getUsername() + " and/or password " + authRequest.getPassword());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
     }
 }

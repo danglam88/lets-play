@@ -1,8 +1,8 @@
 package com.LetsPlay.controller;
 
-import com.LetsPlay.response.ErrorResponse;
 import com.LetsPlay.service.UserService;
 import com.LetsPlay.model.User;
+import com.LetsPlay.response.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +26,9 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (!users.isEmpty()) {
-            return ResponseEntity.ok(userService.convertToDtos(users));
+            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDtos(users));
         }
-        ErrorResponse errorResponse = new ErrorResponse("No users exist in the system yet");
+        Response errorResponse = new Response("No users exist in the system yet");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
@@ -37,9 +37,9 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         Optional<User> user = userService.getUserById(userId);
         if (user.isPresent()) {
-            return ResponseEntity.ok(userService.convertToDto(user.get()));
+            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDto(user.get()));
         }
-        ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
+        Response errorResponse = new Response("User with id " + userId + " not found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
@@ -49,7 +49,7 @@ public class UserController {
             User.fetchAllUsers(userService.getAllUsers());
             User createdUser = userService.createUser(user);
             if (createdUser == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed:" +
+                Response errorResponse = new Response("Creation of new user failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
                         " email must be in a correct format," +
@@ -58,7 +58,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (createdUser.getId() == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new user failed due to duplicated email");
+                Response errorResponse = new Response("Creation of new user failed due to duplicated email");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToDto(createdUser));
@@ -71,14 +71,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User user) {
         if (!userService.findUserById(userId)) {
-            ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
+            Response errorResponse = new Response("User with id " + userId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
             User.fetchAllUsers(userService.getAllUsers());
             User updatedUser = userService.updateUser(userId, user);
             if (updatedUser == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Update of user with id " + userId + " failed:" +
+                Response errorResponse = new Response("Update of user with id " + userId + " failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
                         " email must be in a correct format," +
@@ -87,11 +87,11 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (updatedUser.getId() == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Update of user with id "
+                Response errorResponse = new Response("Update of user with id "
                         + userId + " failed due to duplicated email");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.ok(userService.convertToDto(updatedUser));
+            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDto(updatedUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -101,12 +101,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         if (!userService.findUserById(userId)) {
-            ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
+            Response errorResponse = new Response("User with id " + userId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
-            String status = userService.deleteUser(userId);
-            return ResponseEntity.ok(status);
+            Response okResponse = new Response(userService.deleteUser(userId));
+            return ResponseEntity.status(HttpStatus.OK).body(okResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

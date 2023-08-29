@@ -1,8 +1,8 @@
 package com.LetsPlay.controller;
 
-import com.LetsPlay.response.ErrorResponse;
 import com.LetsPlay.service.ProductService;
 import com.LetsPlay.model.Product;
+import com.LetsPlay.response.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +25,9 @@ public class ProductController {
     public ResponseEntity<?> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         if (products.size() > 0) {
-            return ResponseEntity.ok(products);
+            return ResponseEntity.status(HttpStatus.OK).body(products);
         }
-        ErrorResponse errorResponse = new ErrorResponse("No products exist in the system yet");
+        Response errorResponse = new Response("No products exist in the system yet");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
@@ -35,9 +35,9 @@ public class ProductController {
     public ResponseEntity<?> getProductById(@PathVariable String productId) {
         Optional<Product> product = productService.getProductById(productId);
         if (product.isPresent()) {
-            return ResponseEntity.ok(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(product.get());
         }
-        ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
+        Response errorResponse = new Response("Product with id " + productId + " not found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
@@ -47,7 +47,7 @@ public class ProductController {
         try {
             Product createdProduct = productService.createProduct(product);
             if (createdProduct == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed:" +
+                Response errorResponse = new Response("Creation of new product failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
                         " price must be positive and not exceed 1000000000," +
@@ -64,13 +64,13 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody Product product) {
         if (!productService.findProductById(productId)) {
-            ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
+            Response errorResponse = new Response("Product with id " + productId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
             Product updatedProduct = productService.updateProduct(productId, product);
             if (updatedProduct == null) {
-                ErrorResponse errorResponse = new ErrorResponse("Update of product with id "
+                Response errorResponse = new Response("Update of product with id "
                         + productId + " failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
@@ -78,7 +78,7 @@ public class ProductController {
                         " userId must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.ok(updatedProduct);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -88,12 +88,12 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> deleteProduct(@PathVariable String productId) {
         if (!productService.findProductById(productId)) {
-            ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
+            Response errorResponse = new Response("Product with id " + productId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
         try {
-            String status = productService.deleteProduct(productId);
-            return ResponseEntity.ok(status);
+            Response okResponse = new Response(productService.deleteProduct(productId));
+            return ResponseEntity.status(HttpStatus.OK).body(okResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
