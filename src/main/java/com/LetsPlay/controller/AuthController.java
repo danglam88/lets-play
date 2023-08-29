@@ -42,11 +42,11 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
             } else {
-                Response errorResponse = new Response("Invalid username and/or password");
+                Response errorResponse = new Response("Invalid authentication request");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
             }
         } else {
-            Response errorResponse = new Response("Invalid username and/or password");
+            Response errorResponse = new Response("Invalid authentication request");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
     }
