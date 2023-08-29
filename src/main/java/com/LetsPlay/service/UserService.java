@@ -72,7 +72,8 @@ public class UserService {
         user.setId(userId);
         user.setName(user.getName().trim());
         user.setEmail(user.getEmail().trim());
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        String salt = user.getId();
+        String hashedPassword = passwordEncoder.encode(user.getPassword() + salt);
         user.setPassword(hashedPassword);
         user.setRole(user.getRole().trim().toUpperCase());
         return userRepository.save(user);
@@ -100,7 +101,8 @@ public class UserService {
         user.setId(userId);
         user.setName(user.getName().trim());
         user.setEmail(user.getEmail().trim());
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        String salt = user.getId();
+        String hashedPassword = passwordEncoder.encode(user.getPassword() + salt);
         user.setPassword(hashedPassword);
         user.setRole(user.getRole().trim().toUpperCase());
         return userRepository.save(user);

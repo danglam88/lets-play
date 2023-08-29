@@ -58,7 +58,8 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (createdUser.getId() == null) {
-                Response errorResponse = new Response("Creation of new user failed due to duplicated email");
+                Response errorResponse = new Response("Creation of new user failed due to" +
+                        " duplicated email with an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToDto(createdUser));
@@ -88,7 +89,7 @@ public class UserController {
             }
             if (updatedUser.getId() == null) {
                 Response errorResponse = new Response("Update of user with id "
-                        + userId + " failed due to duplicated email");
+                        + userId + " failed due to duplicated email with an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDto(updatedUser));

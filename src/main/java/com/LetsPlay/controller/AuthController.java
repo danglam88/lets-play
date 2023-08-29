@@ -1,6 +1,8 @@
 package com.LetsPlay.controller;
 
 import com.LetsPlay.model.AuthRequest;
+import com.LetsPlay.model.User;
+import com.LetsPlay.repository.UserRepository;
 import com.LetsPlay.response.Response;
 import com.LetsPlay.service.JwtService;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/auth")
 @AllArgsConstructor
@@ -26,13 +30,23 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
+        Optional<User> user = userRepository.findByEmail(authRequest.getUsername());
+        if (user.isPresent()) {
+            String salt = user.get().getId();
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword() + salt));
+            if (authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
+            } else {
+                Response errorResponse = new Response("Invalid username and/or password");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+            }
         } else {
-            Response errorResponse = new Response("Invalid username " + authRequest.getUsername() + " and/or password " + authRequest.getPassword());
+            Response errorResponse = new Response("Invalid username and/or password");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
     }
