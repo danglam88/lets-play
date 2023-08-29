@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (!users.isEmpty()) {
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         Optional<User> user = userService.getUserById(userId);
         if (user.isPresent()) {
@@ -53,7 +53,8 @@ public class UserController {
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
                         " email must be in a correct format," +
-                        " password must have at least 6 characters");
+                        " password must have at least 6 characters," +
+                        " role must be either role_admin or role_user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (createdUser.getId() == null) {
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN').contains(#authority.toUpperCase()))")
+    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User user) {
         if (!userService.findUserById(userId)) {
             ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
@@ -81,7 +82,8 @@ public class UserController {
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
                         " email must be in a correct format," +
-                        " password must have at least 6 characters");
+                        " password must have at least 6 characters," +
+                        " role must be either role_admin or role_user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (updatedUser.getId() == null) {
@@ -96,7 +98,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN').contains(#authority.toUpperCase()))")
+    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         if (!userService.findUserById(userId)) {
             ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
