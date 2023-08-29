@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (!users.isEmpty()) {
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         Optional<User> user = userService.getUserById(userId);
         if (user.isPresent()) {
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User user) {
         if (!userService.findUserById(userId)) {
             ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");
@@ -98,7 +98,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         if (!userService.findUserById(userId)) {
             ErrorResponse errorResponse = new ErrorResponse("User with id " + userId + " not found");

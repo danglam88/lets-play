@@ -32,7 +32,6 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
     public ResponseEntity<?> getProductById(@PathVariable String productId) {
         Optional<Product> product = productService.getProductById(productId);
         if (product.isPresent()) {
@@ -43,7 +42,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> createProduct(@RequestBody Product product) {
         try {
             Product createdProduct = productService.createProduct(product);
@@ -51,7 +50,8 @@ public class ProductController {
                 ErrorResponse errorResponse = new ErrorResponse("Creation of new product failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
-                        " price must be positive and not exceed 1000000000");
+                        " price must be positive and not exceed 1000000000," +
+                        " userId must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody Product product) {
         if (!productService.findProductById(productId)) {
             ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
@@ -74,7 +74,8 @@ public class ProductController {
                         + productId + " failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
-                        " price must be positive and not exceed 1000000000");
+                        " price must be positive and not exceed 1000000000," +
+                        " userId must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             return ResponseEntity.ok(updatedProduct);
@@ -84,7 +85,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    @PreAuthorize("#authority != null && hasAnyAuthority(T(java.util.Arrays).asList('ROLE_ADMIN', 'ROLE_USER').contains(#authority.toUpperCase()))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> deleteProduct(@PathVariable String productId) {
         if (!productService.findProductById(productId)) {
             ErrorResponse errorResponse = new ErrorResponse("Product with id " + productId + " not found");
