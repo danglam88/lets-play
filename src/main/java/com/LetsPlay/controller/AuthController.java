@@ -5,6 +5,7 @@ import com.LetsPlay.model.User;
 import com.LetsPlay.repository.UserRepository;
 import com.LetsPlay.response.Response;
 import com.LetsPlay.service.JwtService;
+import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @PermitAll
     @PostMapping
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Optional<User> user = userRepository.findByEmail(authRequest.getUsername());

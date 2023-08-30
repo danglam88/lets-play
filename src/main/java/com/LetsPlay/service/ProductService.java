@@ -5,6 +5,7 @@ import com.LetsPlay.model.Product;
 import com.LetsPlay.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class ProductService {
         return productRepository.findById(productId);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public Product createProduct(Product product) {
         if (product.getName() == null
                 || product.getName().trim().isEmpty() || product.getName().trim().length() > 50
@@ -54,6 +56,7 @@ public class ProductService {
         return productRepository.existsById(productId);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public Product updateProduct(String productId, Product product) {
         if (product.getName() == null
                 || product.getName().trim().isEmpty() || product.getName().trim().length() > 50
@@ -71,6 +74,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public String deleteProduct(String productId) {
         productRepository.deleteById(productId);
         return "Deletion of product with id " + productId + " successfully";

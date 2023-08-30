@@ -6,7 +6,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.persistence.Entity;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,12 +28,25 @@ public class User {
     @Id
     private String id;
 
+    @Field("name")
+    @NotNull
+    @Size(min = 1, max = 50)
     private String name;
 
+    @Field("email")
+    @Email
+    @NotNull
+    @Size(max = 50)
     private String email;
 
+    @Field("password")
+    @NotNull
+    @Size(min = 6, max = 50)
     private String password;
 
+    @Field("role")
+    @NotNull
+    @Size(min = 9, max = 10)
     private String role;
 
     public boolean hasValidEmail() {

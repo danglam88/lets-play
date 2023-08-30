@@ -3,10 +3,12 @@ package com.LetsPlay.controller;
 import com.LetsPlay.service.UserService;
 import com.LetsPlay.model.User;
 import com.LetsPlay.response.Response;
+import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +23,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAllUsers();
         if (!users.isEmpty()) {
@@ -32,8 +34,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         Optional<User> user = userService.getUserById(userId);
         if (user.isPresent()) {
@@ -43,6 +45,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @PermitAll
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
@@ -52,9 +55,9 @@ public class UserController {
                 Response errorResponse = new Response("Creation of new user failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
-                        " email must be in a correct format," +
-                        " password must have at least 6 characters," +
-                        " role must be either role_admin or role_user");
+                        " 'email' must be in a correct format," +
+                        " 'password' must have at least 6 characters," +
+                        " 'role' must be either role_admin or role_user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (createdUser.getId() == null) {
@@ -68,8 +71,8 @@ public class UserController {
         }
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User user) {
         if (!userService.findUserById(userId)) {
             Response errorResponse = new Response("User with id " + userId + " not found");
@@ -82,9 +85,9 @@ public class UserController {
                 Response errorResponse = new Response("Update of user with id " + userId + " failed:" +
                         " no any field can be empty (or contain only spaces)," +
                         " every field must have at most 50 characters," +
-                        " email must be in a correct format," +
-                        " password must have at least 6 characters," +
-                        " role must be either role_admin or role_user");
+                        " 'email' must be in a correct format," +
+                        " 'password' must have at least 6 characters," +
+                        " 'role' must be either role_admin or role_user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
             if (updatedUser.getId() == null) {
@@ -98,8 +101,8 @@ public class UserController {
         }
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         if (!userService.findUserById(userId)) {
             Response errorResponse = new Response("User with id " + userId + " not found");

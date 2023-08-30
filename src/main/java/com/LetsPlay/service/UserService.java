@@ -8,6 +8,7 @@ import com.LetsPlay.model.User;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -36,16 +37,19 @@ public class UserService {
         return modelMapper.map(user, UserDTO.class);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<UserDTO> convertToDtos(List<User> users) {
         return users.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public Optional<User> getUserById(String userId) {
         return userRepository.findById(userId);
     }
@@ -79,10 +83,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public boolean findUserById(String userId) {
         return userRepository.existsById(userId);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public User updateUser(String userId, User user) {
         if (user.getName() == null
                 || user.getName().trim().isEmpty() || user.getName().trim().length() > 50
@@ -108,6 +114,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String deleteUser(String userId) {
         List<Product> products = productRepository.findByUserId(userId);
         for (Product product: products) {
