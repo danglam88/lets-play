@@ -5,6 +5,7 @@ import com.LetsPlay.model.User;
 import com.LetsPlay.repository.UserRepository;
 import com.LetsPlay.response.Response;
 import com.LetsPlay.service.JwtService;
+import com.LetsPlay.service.RateLimitService;
 import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +35,22 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RateLimitService rateLimitService;
+
     @PermitAll
     @PostMapping
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         Optional<User> user = userRepository.findByEmail(authRequest.getUsername());
         if (user.isPresent()) {
             String salt = user.get().getId();
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword() + salt));
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(),
+                            authRequest.getPassword() + salt));
             if (authentication.isAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
             } else {

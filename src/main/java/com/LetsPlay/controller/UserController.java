@@ -1,5 +1,6 @@
 package com.LetsPlay.controller;
 
+import com.LetsPlay.service.RateLimitService;
 import com.LetsPlay.service.UserService;
 import com.LetsPlay.model.User;
 import com.LetsPlay.response.Response;
@@ -22,9 +23,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RateLimitService rateLimitService;
+
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         List<User> users = userService.getAllUsers();
         if (!users.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDtos(users));
@@ -36,6 +44,10 @@ public class UserController {
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         Optional<User> user = userService.getUserById(userId);
         if (user.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDto(user.get()));
@@ -47,6 +59,10 @@ public class UserController {
     @PermitAll
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         try {
             User.fetchAllUsers(userService.getAllUsers());
             User createdUser = userService.createUser(user);
@@ -73,6 +89,10 @@ public class UserController {
     @Secured("ROLE_ADMIN")
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User user) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         if (!userService.findUserById(userId)) {
             Response errorResponse = new Response("User with id " + userId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -103,6 +123,10 @@ public class UserController {
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         if (!userService.findUserById(userId)) {
             Response errorResponse = new Response("User with id " + userId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);

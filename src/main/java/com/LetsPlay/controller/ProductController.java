@@ -3,6 +3,7 @@ package com.LetsPlay.controller;
 import com.LetsPlay.service.ProductService;
 import com.LetsPlay.model.Product;
 import com.LetsPlay.response.Response;
+import com.LetsPlay.service.RateLimitService;
 import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,16 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private RateLimitService rateLimitService;
+
     @PermitAll
     @GetMapping
     public ResponseEntity<?> getAllProducts() {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         List<Product> products = productService.getAllProducts();
         if (products.size() > 0) {
             return ResponseEntity.status(HttpStatus.OK).body(products);
@@ -36,6 +44,10 @@ public class ProductController {
     @PermitAll
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable String productId) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         Optional<Product> product = productService.getProductById(productId);
         if (product.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(product.get());
@@ -47,6 +59,10 @@ public class ProductController {
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody Product product) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         try {
             Product createdProduct = productService.createProduct(product);
             if (createdProduct == null) {
@@ -66,6 +82,10 @@ public class ProductController {
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @PutMapping("/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody Product product) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         if (!productService.findProductById(productId)) {
             Response errorResponse = new Response("Product with id " + productId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -90,6 +110,10 @@ public class ProductController {
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable String productId) {
+        if (!rateLimitService.allowRequest()) {
+            Response errorResponse = new Response("Too many requests, please try again later");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
+        }
         if (!productService.findProductById(productId)) {
             Response errorResponse = new Response("Product with id " + productId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
