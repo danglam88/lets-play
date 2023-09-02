@@ -69,7 +69,7 @@ You can download Maven [here](https://maven.apache.org/download.cgi).
 
 ## Usage
 
-To run the project, navigate to the project root directory containing the `pom.xml` file, then build the project (using Maven) and run the JAR output (using the Java).
+To run the project, navigate to the project root directory containing the `pom.xml` file, then build the project (using Maven) and run the JAR output (using Java).
 
 ```bash
 mvn clean package
