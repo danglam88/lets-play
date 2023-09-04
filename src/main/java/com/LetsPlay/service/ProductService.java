@@ -1,9 +1,12 @@
 package com.LetsPlay.service;
 
+import com.LetsPlay.model.ProductDTO;
+import com.LetsPlay.model.User;
 import com.LetsPlay.repository.ProductRepository;
 import com.LetsPlay.model.Product;
 import com.LetsPlay.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -21,6 +25,24 @@ public class ProductService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public ProductDTO convertToDto(Product product) {
+        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        Optional<User> user = userRepository.findById(product.getUserId());
+        if (user.isPresent()) {
+            productDTO.setOwner(user.get().getName());
+        }
+        return productDTO;
+    }
+
+    public List<ProductDTO> convertToDtos(List<Product> products) {
+        return products.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();

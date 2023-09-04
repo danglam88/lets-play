@@ -34,8 +34,8 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
         }
         List<Product> products = productService.getAllProducts();
-        if (products.size() > 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(products);
+        if (!products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDtos(products));
         }
         Response errorResponse = new Response("No products exist in the system yet");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -50,7 +50,7 @@ public class ProductController {
         }
         Optional<Product> product = productService.getProductById(productId);
         if (product.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(product.get());
+            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDto(product.get()));
         }
         Response errorResponse = new Response("Product with id " + productId + " not found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -73,7 +73,7 @@ public class ProductController {
                         " 'userId' must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+            return ResponseEntity.status(HttpStatus.CREATED).body(productService.convertToDto(createdProduct));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -101,7 +101,7 @@ public class ProductController {
                         " 'userId' must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDto(updatedProduct));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
