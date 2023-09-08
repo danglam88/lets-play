@@ -56,10 +56,10 @@ public class ProductService {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<Product> getProductsByUserEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        if (user.isPresent()) {
-            return productRepository.findByUserId(user.get().getId());
+        if (!user.isPresent()) {
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
+        return productRepository.findByUserId(user.get().getId());
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
