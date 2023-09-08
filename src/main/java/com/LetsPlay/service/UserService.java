@@ -44,7 +44,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
