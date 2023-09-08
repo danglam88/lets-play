@@ -19,17 +19,20 @@ A user can have either the `ROLE_ADMIN` (called an admin) or the `ROLE_USER` (ca
 
 The list of RESTful APIs to perform CRUD operations on both Users and Products are:
 
-- POST `/auth` - Authenticate a user by their username (email) and password then return a 24-hour valid token to them (accessible without authentication)
+- POST `/auth` - Authenticate a user by their username (email) and password then return a 7-day valid token to them (accessible without authentication)
+- POST `/reg` - Register a new user with `ROLE_USER` role (accessible without authentication)
 - GET `/products` - Get all products in the database (accessible without authentication)
 - GET `/products/{id}` - Get a product by its ID (accessible without authentication)
 - POST `/products` - Create a new product (accessible by an admin or a user)
 - PUT `/products/{id}` - Update a product by its ID (accessible by an admin or a user)
 - DELETE `/products/{id}` - Delete a product by its ID (accessible by an admin or a user)
 - GET `/users` - Get all users in the database (accessible by an admin or a user)
-- GET `/users/{id}` - Get a user by its ID (accessible by an admin or a user)
-- POST `/users` - Create a new user (accessible without authentication)
+- GET `/users/{id}` - Get a user by their ID (accessible by an admin or a user)
+- POST `/users` - Create a new user (accessible by an admin only)
 - PUT `/users/{id}` - Update a user by its ID (accessible by an admin only)
 - DELETE `/users/{id}` - Delete a user by its ID (accessible by an admin only)
+- GET `/ownUserInfo` - Get the information of the currently authenticated user (accessible by an admin or a user)
+- GET `/ownProductInfo` - Get all products owned by the currently authenticated user (accessible by an admin or a user)
 
 An example of a valid JSON object for creating a new / updating an existing product is:
 
@@ -49,7 +52,26 @@ An example of a valid JSON object for creating a new / updating an existing user
     "name": "Name of User",
     "email": "abcxyz@gmail.com",
     "password": "123456",
-    "role": "ROLE_USER"
+    "role": "ROLE_ADMIN"
+}
+```
+
+An example of a valid JSON object for authenticating a user is:
+
+```json
+{
+    "username": "abcxyz@gmail.com",
+    "password": "123456"
+}
+```
+
+An example of a valid JSON object for registering a new user is:
+
+```json
+{
+    "name": "Name of User",
+    "email": "abcxyz@gmail.com",
+    "password": "123456"
 }
 ```
 
