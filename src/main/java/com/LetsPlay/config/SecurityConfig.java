@@ -36,21 +36,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers(HttpMethod.POST, "/auth", "/users")
-                                        .permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/products", "/products/**")
-                                        .permitAll()
-                                        .requestMatchers("/users", "/users/**", "/products", "/products/**")
-                                        .authenticated()
-                                        .anyRequest()
-                                        .permitAll())
-                .build();
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(
+                auth ->
+                    auth.requestMatchers(HttpMethod.POST, "/auth", "/users")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products", "/products/**")
+                        .permitAll()
+                        .requestMatchers("/users", "/users/**", "/ownUserInfo",
+                                "/products", "/products/**", "/ownProductInfo")
+                        .authenticated()
+                        .anyRequest()
+                        .permitAll())
+            .build();
     }
 
     @Bean

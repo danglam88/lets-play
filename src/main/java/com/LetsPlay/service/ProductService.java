@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,6 +51,15 @@ public class ProductService {
 
     public Optional<Product> getProductById(String productId) {
         return productRepository.findById(productId);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public List<Product> getProductsByUserEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return productRepository.findByUserId(user.get().getId());
+        }
+        return new ArrayList<>();
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")

@@ -53,6 +53,11 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public User createUser(User user) {
         if (user.getName() == null
                 || user.getName().trim().isEmpty() || user.getName().trim().length() > 50
