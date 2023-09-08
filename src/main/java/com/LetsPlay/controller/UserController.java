@@ -4,7 +4,6 @@ import com.LetsPlay.service.RateLimitService;
 import com.LetsPlay.service.UserService;
 import com.LetsPlay.model.User;
 import com.LetsPlay.response.Response;
-import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,7 +55,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @PermitAll
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         if (!rateLimitService.allowRequest()) {

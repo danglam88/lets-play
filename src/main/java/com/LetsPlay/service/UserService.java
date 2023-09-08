@@ -1,6 +1,7 @@
 package com.LetsPlay.service;
 
 import com.LetsPlay.model.Product;
+import com.LetsPlay.model.RegRequest;
 import com.LetsPlay.model.UserDTO;
 import com.LetsPlay.repository.ProductRepository;
 import com.LetsPlay.repository.UserRepository;
@@ -58,6 +59,7 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public User createUser(User user) {
         if (user.getName() == null
                 || user.getName().trim().isEmpty() || user.getName().trim().length() > 50
@@ -84,6 +86,32 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(user.getPassword() + salt);
         user.setPassword(hashedPassword);
         user.setRole(user.getRole().trim().toUpperCase());
+        return userRepository.save(user);
+    }
+
+    public User createAccount(RegRequest regRequest) {
+        User user = new User(null, regRequest.getName(), regRequest.getEmail(), regRequest.getPassword(), "ROLE_USER");
+        if (user.getName() == null
+                || user.getName().trim().isEmpty() || user.getName().trim().length() > 50
+                || user.getEmail() == null
+                || !user.hasValidEmail() || user.getEmail().trim().length() > 50
+                || user.getPassword() == null
+                || user.getPassword().length() < 6 || user.getPassword().length() > 50) {
+            return null;
+        }
+        if (user.hasDuplicatedEmail(null)) {
+            return user;
+        }
+        String userId = "";
+        do {
+            userId = UUID.randomUUID().toString().split("-")[0];
+        } while (userRepository.existsById(userId));
+        user.setId(userId);
+        user.setName(user.getName().trim());
+        user.setEmail(user.getEmail().trim());
+        String salt = user.getId();
+        String hashedPassword = passwordEncoder.encode(user.getPassword() + salt);
+        user.setPassword(hashedPassword);
         return userRepository.save(user);
     }
 
