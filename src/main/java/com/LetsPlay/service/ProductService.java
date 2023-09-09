@@ -1,6 +1,7 @@
 package com.LetsPlay.service;
 
 import com.LetsPlay.model.ProductDTO;
+import com.LetsPlay.model.ProductNoUserId;
 import com.LetsPlay.model.User;
 import com.LetsPlay.repository.ProductRepository;
 import com.LetsPlay.model.Product;
@@ -45,6 +46,23 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ProductNoUserId convertToNoUserId(Product product) {
+        ProductNoUserId productNoUserId = modelMapper.map(product, ProductNoUserId.class);
+        Optional<User> user = userRepository.findById(product.getUserId());
+        if (user.isPresent()) {
+            productNoUserId.setOwner(user.get().getName());
+        }
+        return productNoUserId;
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public List<ProductNoUserId> convertToNoUserIds(List<Product> products) {
+        return products.stream()
+                .map(this::convertToNoUserId)
+                .collect(Collectors.toList());
+    }
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
@@ -63,7 +81,7 @@ public class ProductService {
         return productRepository.findByUserId(user.get().getId());
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Product createProduct(Product product) {
         if (product.getName() == null
                 || product.getName().trim().isEmpty() || product.getName().trim().length() > 50
@@ -85,11 +103,12 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public boolean findProductById(String productId) {
         return productRepository.existsById(productId);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Product updateProduct(String productId, Product product) {
         if (product.getName() == null
                 || product.getName().trim().isEmpty() || product.getName().trim().length() > 50
@@ -107,7 +126,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String deleteProduct(String productId) {
         productRepository.deleteById(productId);
         return "Deletion of product with id " + productId + " successfully";

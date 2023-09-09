@@ -60,7 +60,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDtos(users));
     }
 
-    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
+    @Secured("ROLE_ADMIN")
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable String userId) {
         if (!rateLimitService.allowRequest()) {

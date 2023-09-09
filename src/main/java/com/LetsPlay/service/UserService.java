@@ -58,7 +58,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Optional<User> getUserById(String userId) {
         return userRepository.findById(userId);
     }
@@ -124,7 +124,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public boolean findUserById(String userId) {
         return userRepository.existsById(userId);
     }

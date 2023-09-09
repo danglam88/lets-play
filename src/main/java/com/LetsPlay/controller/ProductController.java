@@ -58,12 +58,15 @@ public class ProductController {
         if (!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDtos(products));
         }
+        if (user.get().getRole().equals("ROLE_USER")) {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToNoUserIds(products));
+        }
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping("/{productId}")
-    public ResponseEntity<?> getProductById(@PathVariable String productId) {
+    public ResponseEntity<?> getProductById(@PathVariable String productId, HttpServletRequest request) {
         if (!rateLimitService.allowRequest()) {
             Response errorResponse = new Response("Too many requests, please try again later");
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
@@ -73,10 +76,25 @@ public class ProductController {
             Response errorResponse = new Response("Product with id " + productId + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            Response errorResponse = new Response("User is not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        Optional<User> user = userService.getUserByEmail(username);
+        if (!user.isPresent()) {
+            Response errorResponse = new Response("User with email " + username + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+        if (user.get().getRole().equals("ROLE_USER")) {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToNoUserId(product.get()));
+        }
         return ResponseEntity.status(HttpStatus.OK).body(product.get());
     }
 
-    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody Product product) {
         if (!rateLimitService.allowRequest()) {
@@ -99,7 +117,7 @@ public class ProductController {
         }
     }
 
-    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody Product product) {
         if (!rateLimitService.allowRequest()) {
@@ -127,7 +145,7 @@ public class ProductController {
         }
     }
 
-    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable String productId) {
         if (!rateLimitService.allowRequest()) {
