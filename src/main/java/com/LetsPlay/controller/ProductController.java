@@ -4,7 +4,7 @@ import com.LetsPlay.model.User;
 import com.LetsPlay.service.JwtService;
 import com.LetsPlay.service.ProductService;
 import com.LetsPlay.model.Product;
-import com.LetsPlay.response.Response;
+import com.LetsPlay.model.Response;
 import com.LetsPlay.service.RateLimitService;
 import com.LetsPlay.service.UserService;
 import jakarta.annotation.security.PermitAll;

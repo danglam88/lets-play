@@ -1,10 +1,10 @@
-package com.LetsPlay.response;
+package com.LetsPlay.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
 public class Response {
     private String message;
 }

@@ -4,7 +4,7 @@ import com.LetsPlay.service.JwtService;
 import com.LetsPlay.service.RateLimitService;
 import com.LetsPlay.service.UserService;
 import com.LetsPlay.model.User;
-import com.LetsPlay.response.Response;
+import com.LetsPlay.model.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

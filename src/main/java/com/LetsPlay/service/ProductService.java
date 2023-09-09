@@ -6,7 +6,6 @@ import com.LetsPlay.model.User;
 import com.LetsPlay.repository.ProductRepository;
 import com.LetsPlay.model.Product;
 import com.LetsPlay.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +17,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Service
 public class ProductService {
 

@@ -2,7 +2,7 @@ package com.LetsPlay.controller;
 
 import com.LetsPlay.model.RegRequest;
 import com.LetsPlay.model.User;
-import com.LetsPlay.response.Response;
+import com.LetsPlay.model.Response;
 import com.LetsPlay.service.RateLimitService;
 import com.LetsPlay.service.UserService;
 import jakarta.annotation.security.PermitAll;

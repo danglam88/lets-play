@@ -3,7 +3,7 @@ package com.LetsPlay.controller;
 import com.LetsPlay.model.AuthRequest;
 import com.LetsPlay.model.User;
 import com.LetsPlay.repository.UserRepository;
-import com.LetsPlay.response.Response;
+import com.LetsPlay.model.Response;
 import com.LetsPlay.service.JwtService;
 import com.LetsPlay.service.RateLimitService;
 import jakarta.annotation.security.PermitAll;
@@ -54,11 +54,11 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
             } else {
-                Response errorResponse = new Response("Invalid authentication request");
+                Response errorResponse = new Response("User is not authenticated");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
             }
         } else {
-            Response errorResponse = new Response("Invalid authentication request");
+            Response errorResponse = new Response("User is not authenticated");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
     }
