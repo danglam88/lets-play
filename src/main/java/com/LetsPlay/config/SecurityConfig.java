@@ -44,7 +44,7 @@ public class SecurityConfig {
                 auth ->
                     auth.requestMatchers(HttpMethod.POST, "/auth", "/reg")
                         .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products", "/products/**")
+                        .requestMatchers(HttpMethod.GET, "/products")
                         .permitAll()
                         .requestMatchers("/users", "/users/**", "/ownUserInfo",
                                 "/products", "/products/**", "/ownProductInfo")

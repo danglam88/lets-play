@@ -1,10 +1,14 @@
 package com.LetsPlay.controller;
 
+import com.LetsPlay.model.User;
+import com.LetsPlay.service.JwtService;
 import com.LetsPlay.service.ProductService;
 import com.LetsPlay.model.Product;
 import com.LetsPlay.response.Response;
 import com.LetsPlay.service.RateLimitService;
+import com.LetsPlay.service.UserService;
 import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,27 +25,43 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
+    private JwtService jwtService;
+
+    @Autowired
     private ProductService productService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private RateLimitService rateLimitService;
 
     @PermitAll
     @GetMapping
-    public ResponseEntity<?> getAllProducts() {
+    public ResponseEntity<?> getAllProducts(HttpServletRequest request) {
         if (!rateLimitService.allowRequest()) {
             Response errorResponse = new Response("Too many requests, please try again later");
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
         }
         List<Product> products = productService.getAllProducts();
-        if (!products.isEmpty()) {
+        if (products.isEmpty()) {
+            Response errorResponse = new Response("No products exist in the system yet");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDtos(products));
         }
-        Response errorResponse = new Response("No products exist in the system yet");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        Optional<User> user = userService.getUserByEmail(username);
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDtos(products));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 
-    @PermitAll
+    @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable String productId) {
         if (!rateLimitService.allowRequest()) {
@@ -49,11 +69,11 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
         }
         Optional<Product> product = productService.getProductById(productId);
-        if (product.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDto(product.get()));
+        if (!product.isPresent()) {
+            Response errorResponse = new Response("Product with id " + productId + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-        Response errorResponse = new Response("Product with id " + productId + " not found");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(product.get());
     }
 
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
@@ -73,7 +93,7 @@ public class ProductController {
                         " 'userId' must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(productService.convertToDto(createdProduct));
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -101,7 +121,7 @@ public class ProductController {
                         " 'userId' must be a valid id of an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(productService.convertToDto(updatedProduct));
+            return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

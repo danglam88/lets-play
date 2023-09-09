@@ -50,8 +50,6 @@ public class OwnUserController {
             Response errorResponse = new Response("User with email " + username + " not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-        User userInfo = user.get();
-        userInfo.setPassword(null);
-        return ResponseEntity.status(HttpStatus.OK).body(userInfo);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPass(user.get()));
     }
 }

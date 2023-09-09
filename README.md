@@ -22,7 +22,7 @@ The list of RESTful APIs to perform CRUD operations on both Users and Products a
 - POST `/auth` - Authenticate a user by their username (email) and password then return a 7-day valid token to them (accessible without authentication)
 - POST `/reg` - Register a new user with `ROLE_USER` role (accessible without authentication)
 - GET `/products` - Get all products in the database (accessible without authentication)
-- GET `/products/{id}` - Get a product by its ID (accessible without authentication)
+- GET `/products/{id}` - Get a product by its ID (accessible by an admin or a user)
 - POST `/products` - Create a new product (accessible by an admin or a user)
 - PUT `/products/{id}` - Update a product by its ID (accessible by an admin or a user)
 - DELETE `/products/{id}` - Delete a product by its ID (accessible by an admin or a user)

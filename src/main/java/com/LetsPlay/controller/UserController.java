@@ -1,9 +1,11 @@
 package com.LetsPlay.controller;
 
+import com.LetsPlay.service.JwtService;
 import com.LetsPlay.service.RateLimitService;
 import com.LetsPlay.service.UserService;
 import com.LetsPlay.model.User;
 import com.LetsPlay.response.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
+    private JwtService jwtService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -27,17 +32,32 @@ public class UserController {
 
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<?> getAllUsers(HttpServletRequest request) {
         if (!rateLimitService.allowRequest()) {
             Response errorResponse = new Response("Too many requests, please try again later");
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
         }
         List<User> users = userService.getAllUsers();
-        if (!users.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDtos(users));
+        if (users.isEmpty()) {
+            Response errorResponse = new Response("No users exist in the system yet");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-        Response errorResponse = new Response("No users exist in the system yet");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            Response errorResponse = new Response("User is not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        Optional<User> user = userService.getUserByEmail(username);
+        if (!user.isPresent()) {
+            Response errorResponse = new Response("User with email " + username + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+        if (user.get().getRole().equals("ROLE_ADMIN")) {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPasses(users));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDtos(users));
     }
 
     @Secured({ "ROLE_ADMIN", "ROLE_USER" })
@@ -48,11 +68,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
         }
         Optional<User> user = userService.getUserById(userId);
-        if (user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDto(user.get()));
+        if (!user.isPresent()) {
+            Response errorResponse = new Response("User with id " + userId + " not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-        Response errorResponse = new Response("User with id " + userId + " not found");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPass(user.get()));
     }
 
     @Secured("ROLE_ADMIN")
@@ -79,7 +99,7 @@ public class UserController {
                         " duplicated email with an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToDto(createdUser));
+            return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToNoPass(createdUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -113,7 +133,7 @@ public class UserController {
                         + userId + " failed due to duplicated email with an existing user");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToDto(updatedUser));
+            return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPass(updatedUser));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

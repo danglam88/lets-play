@@ -49,6 +49,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public Optional<Product> getProductById(String productId) {
         return productRepository.findById(productId);
     }

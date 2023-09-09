@@ -1,11 +1,8 @@
 package com.LetsPlay.service;
 
-import com.LetsPlay.model.Product;
-import com.LetsPlay.model.RegRequest;
-import com.LetsPlay.model.UserDTO;
+import com.LetsPlay.model.*;
 import com.LetsPlay.repository.ProductRepository;
 import com.LetsPlay.repository.UserRepository;
-import com.LetsPlay.model.User;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public UserDTO convertToDto(User user) {
         return modelMapper.map(user, UserDTO.class);
     }
@@ -42,6 +40,17 @@ public class UserService {
     public List<UserDTO> convertToDtos(List<User> users) {
         return users.stream()
                 .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserNoPass convertToNoPass(User user) {
+        return modelMapper.map(user, UserNoPass.class);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<UserNoPass> convertToNoPasses(List<User> users) {
+        return users.stream()
+                .map(this::convertToNoPass)
                 .collect(Collectors.toList());
     }
 

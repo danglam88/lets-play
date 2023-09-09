@@ -49,8 +49,7 @@ public class RegController {
                         " duplicated email with an existing account");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             }
-            createdAccount.setPassword(null);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
+            return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToNoPass(createdAccount));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
