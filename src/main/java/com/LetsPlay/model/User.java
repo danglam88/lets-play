@@ -3,9 +3,9 @@ package com.LetsPlay.model;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.persistence.Entity;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.Email;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Random;
 
 @Document(collection = "users")
 @Entity
@@ -66,6 +67,25 @@ public class User {
             }
         }
         return false;
+    }
+
+    public void generateRandomEmail() {
+        this.setEmail(this.generateRandomString(3, 6) + "@"
+                + this.generateRandomString(3, 6) + "." + this.generateRandomString(3, 6));
+    }
+
+    public String generateRandomString(int minLength, int maxLength) {
+        Random random = new Random();
+        int length = minLength + random.nextInt(maxLength - minLength + 1);
+        StringBuilder randomString = new StringBuilder();
+        String characters = "abcdefghijklmnopqrstuvwxyz";
+
+        for (int i = 0; i < length; i++) {
+            char randomChar = characters.charAt(random.nextInt(characters.length()));
+            randomString.append(randomChar);
+        }
+
+        return randomString.toString();
     }
 
     public static void fetchAllUsers(List<User> users) {
