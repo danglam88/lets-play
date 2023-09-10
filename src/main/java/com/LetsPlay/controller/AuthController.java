@@ -52,14 +52,15 @@ public class AuthController {
                     .authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(),
                             authRequest.getPassword() + salt));
             if (authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.OK).body(jwtService.generateToken(authRequest.getUsername()));
+                Response okResponse = new Response(jwtService.generateToken(authRequest.getUsername()));
+                return ResponseEntity.status(HttpStatus.OK).body(okResponse);
             } else {
                 Response errorResponse = new Response("User is not authenticated");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
             }
         } else {
             Response errorResponse = new Response("User is not authenticated");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
 }

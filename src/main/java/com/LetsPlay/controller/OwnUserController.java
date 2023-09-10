@@ -40,15 +40,15 @@ public class OwnUserController {
         }
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            Response errorResponse = new Response("User is not authenticated");
+            Response errorResponse = new Response("Invalid token");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
         Optional<User> user = userService.getUserByEmail(username);
         if (!user.isPresent()) {
-            Response errorResponse = new Response("User with email " + username + " not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            Response errorResponse = new Response("User is not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
         return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPass(user.get()));
     }

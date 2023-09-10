@@ -46,22 +46,21 @@ public class OwnProductController {
         }
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            Response errorResponse = new Response("User is not authenticated");
+            Response errorResponse = new Response("Invalid token");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
         Optional<User> user = userService.getUserByEmail(username);
         if (!user.isPresent()) {
-            Response errorResponse = new Response("User with email "
-                    + username + " not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            Response errorResponse = new Response("User is not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
         List<Product> products = productService.getProductsByUserEmail(username);
         if (products.isEmpty()) {
-            Response errorResponse = new Response("No products exist for user with email "
-                    + username + " in the system yet");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            Response okResponse = new Response("No products exist for user with email "
+                    + username + " yet");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(okResponse);
         }
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }

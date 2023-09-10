@@ -39,20 +39,20 @@ public class UserController {
         }
         List<User> users = userService.getAllUsers();
         if (users.isEmpty()) {
-            Response errorResponse = new Response("No users exist in the system yet");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            Response okResponse = new Response("No users exist in the system yet");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(okResponse);
         }
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            Response errorResponse = new Response("User is not authenticated");
+            Response errorResponse = new Response("Invalid token");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
         String token = authHeader.substring(7);
         String username = jwtService.extractUsername(token);
         Optional<User> user = userService.getUserByEmail(username);
         if (!user.isPresent()) {
-            Response errorResponse = new Response("User with email " + username + " not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            Response errorResponse = new Response("User is not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
         if (user.get().getRole().equals("ROLE_ADMIN")) {
             return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPasses(users));
@@ -97,7 +97,7 @@ public class UserController {
             if (createdUser.getId() == null) {
                 Response errorResponse = new Response("Creation of new user failed due to" +
                         " duplicated email with an existing user");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToNoPass(createdUser));
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class UserController {
             if (updatedUser.getId() == null) {
                 Response errorResponse = new Response("Update of user with id "
                         + userId + " failed due to duplicated email with an existing user");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.OK).body(userService.convertToNoPass(updatedUser));
         } catch (Exception e) {

@@ -47,7 +47,7 @@ public class RegController {
             if (createdAccount.getId() == null) {
                 Response errorResponse = new Response("Creation of new account failed due to" +
                         " duplicated email with an existing account");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.convertToNoPass(createdAccount));
         } catch (Exception e) {

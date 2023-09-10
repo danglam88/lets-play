@@ -3,7 +3,6 @@ package com.LetsPlay.filter;
 import com.LetsPlay.config.UserInfoUserDetailsService;
 import com.LetsPlay.service.JwtService;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
