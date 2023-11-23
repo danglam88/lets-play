@@ -1,5 +1,0 @@
-spring:
-  data:
-    mongodb:
-      uri: mongodb+srv://admin:admin@cluster0.g37u4wy.mongodb.net/?retryWrites=true&w=majority
-      database: LetsPlayDB
