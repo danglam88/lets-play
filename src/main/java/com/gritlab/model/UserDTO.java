@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 public class UserDTO {
 
+    @JsonIgnore
     private String id;
 
     @NotNull(message = "Name is required")
