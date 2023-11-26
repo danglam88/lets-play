@@ -1,7 +1,6 @@
 package com.gritlab.unit;
 
 import com.gritlab.controller.RegController;
-import com.gritlab.model.Role;
 import com.gritlab.model.User;
 import com.gritlab.model.UserRequest;
 import com.gritlab.service.UserService;
@@ -53,7 +52,7 @@ class RegControllerTest {
                 "avatar.png", "image/png", "avatar".getBytes());
 
         User newUser = new User("user-id1", "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         // Create a new account as needed
         when(userService.createAccount(userRequest)).thenReturn(newUser);

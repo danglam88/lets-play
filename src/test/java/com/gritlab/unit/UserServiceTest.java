@@ -70,7 +70,7 @@ class UserServiceTest {
                 "test2@mail.com", "Test2@", "SELLER");
 
         User user = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -96,7 +96,7 @@ class UserServiceTest {
         when(userService.findUserById(userId)).thenReturn(true);
 
         User user = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         // Mock UserDetails
         UserInfoUserDetails userDetails = mock(UserInfoUserDetails.class);
@@ -135,7 +135,7 @@ class UserServiceTest {
         when(userService.findUserById(userId)).thenReturn(true);
 
         User user = new User("user-id2", "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         // Mock UserDetails
         UserInfoUserDetails userDetails = mock(UserInfoUserDetails.class);

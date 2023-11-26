@@ -45,5 +45,5 @@ public class User {
     @NotNull(message = "Role is required")
     @Pattern(regexp = "^(?!\\s*$).+", message = "Role cannot be empty or contain only spaces")
     @Pattern(regexp = "^(?i)(admin|user)$", message = "Role must be either 'ADMIN' or 'USER' (case-insensitive)")
-    private Role role;
+    private String role;
 }

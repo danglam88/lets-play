@@ -9,10 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.annotation.Validated;
 
-import java.io.IOException;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -32,19 +30,13 @@ public class UserService {
 
     public User convertFromDto(UserDTO userDTO) {
         User user = new User(userDTO.getId(), userDTO.getName(), userDTO.getEmail(),
-                userDTO.getPassword(), null);
-        if (userDTO.getRole() != null) {
-            user.setRole(Role.valueOf(userDTO.getRole()));
-        }
+                userDTO.getPassword(), userDTO.getRole());
         return user;
     }
 
     public UserDTO convertToDto(User user) {
         UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getEmail(),
-                user.getPassword(), null);
-        if (user.getRole() != null) {
-            userDTO.setRole(user.getRole().toString());
-        }
+                user.getPassword(), user.getRole());
         return userDTO;
     }
 

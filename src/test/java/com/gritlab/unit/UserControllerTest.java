@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gritlab.controller.UserController;
-import com.gritlab.model.Role;
 import com.gritlab.model.User;
 import com.gritlab.model.UserDTO;
 import com.gritlab.model.UserRequest;
@@ -53,7 +52,7 @@ class UserControllerTest {
         String userId = "user-id1";
 
         User authorizedUser = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         when(userService.authorizeUser(authentication, null)).thenReturn(authorizedUser);
 
@@ -81,7 +80,7 @@ class UserControllerTest {
         String userId = "user-id1";
 
         User authorizedUser = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         when(userService.authorizeUser(authentication, userId)).thenReturn(authorizedUser);
     }
@@ -92,7 +91,7 @@ class UserControllerTest {
         String userId = "user-id1";
 
         User authorizedUser = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         when(userService.authorizeUser(authentication, userId)).thenReturn(authorizedUser);
 
@@ -122,7 +121,7 @@ class UserControllerTest {
         String userId = "user-id1";
 
         User authorizedUser = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         when(userService.authorizeUser(authentication, userId)).thenReturn(authorizedUser);
 
@@ -132,7 +131,7 @@ class UserControllerTest {
 
         // Mock the userService's updateUser method data
         User updatedUser = new User(userId, "Test2 Name", "test2@mail.com",
-                "Test2@", Role.ADMIN);
+                "Test2@", "ADMIN");
 
         // Update an existing user as needed
         when(userService.updateUser(userId, userRequest)).thenReturn(updatedUser);
@@ -154,7 +153,7 @@ class UserControllerTest {
         String userId = "user-id1";
 
         User authorizedUser = new User(userId, "Test Name", "test@mail.com",
-                "Test1@", Role.ADMIN);
+                "Test1@", "ADMIN");
 
         when(userService.authorizeUser(authentication, userId)).thenReturn(authorizedUser);
 
