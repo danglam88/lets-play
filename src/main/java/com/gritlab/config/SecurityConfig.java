@@ -5,7 +5,6 @@ import com.gritlab.component.ExceptionFilter;
 import com.gritlab.component.RateLimitFilter;
 import com.gritlab.component.JwtAuthFilter;
 import com.gritlab.service.UserInfoUserDetailsService;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -61,11 +60,6 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
             .build();
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
     }
 
     @Bean
