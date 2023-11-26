@@ -32,19 +32,10 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<JsonNode> getAllUsers(Authentication authentication) throws JsonProcessingException {
-        User user = userService.authorizeUser(authentication, null);
+        userService.authorizeUser(authentication, null);
         ObjectMapper objectMapper = new ObjectMapper();
         String usersNoPass = objectMapper.writeValueAsString(userService.convertToDtos(userService.getAllUsers()));
         return ResponseEntity.status(HttpStatus.OK).body(objectMapper.readTree(usersNoPass));
-    }
-
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping("/userInfo")
-    public ResponseEntity<JsonNode> getUserInfo(Authentication authentication) throws JsonProcessingException {
-        User user = userService.authorizeUser(authentication, null);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String userNoPass = objectMapper.writeValueAsString(userService.convertToDto(user));
-        return ResponseEntity.status(HttpStatus.OK).body(objectMapper.readTree(userNoPass));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")

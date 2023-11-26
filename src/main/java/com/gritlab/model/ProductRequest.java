@@ -20,7 +20,7 @@ public class ProductRequest {
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0.0")
-    @DecimalMax(value = "999999999.99", message = "Price must be less than 999999999.99")
+    @DecimalMax(value = "999999999.99", message = "Price must be at most 999999999.99")
     private Double price;
 
     @NotNull(message = "userId is required")

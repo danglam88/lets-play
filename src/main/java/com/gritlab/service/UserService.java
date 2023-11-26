@@ -3,6 +3,7 @@ package com.gritlab.service;
 import com.gritlab.exception.InvalidParamException;
 import com.gritlab.model.*;
 import com.gritlab.repository.UserRepository;
+import com.gritlab.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -13,37 +14,35 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
 @Validated
 public class UserService {
-
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public User convertFromDto(UserDTO userDTO) {
-        User user = new User(userDTO.getId(), userDTO.getName(), userDTO.getEmail(),
+        return new User(userDTO.getId(), userDTO.getName(), userDTO.getEmail(),
                 userDTO.getPassword(), userDTO.getRole());
-        return user;
     }
 
     public UserDTO convertToDto(User user) {
-        UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getEmail(),
+        return new UserDTO(user.getId(), user.getName(), user.getEmail(),
                 user.getPassword(), user.getRole());
-        return userDTO;
     }
 
     public List<UserDTO> convertToDtos(List<User> users) {
-        return users.stream()
+        List<UserDTO> userDTOs = users.stream()
                 .map(this::convertToDto)
                 .toList();
+        userDTOs.forEach(userDTO -> userDTO.setId(null));
+        return userDTOs;
     }
 
     public List<User> getAllUsers() {
@@ -58,11 +57,14 @@ public class UserService {
         UserDTO userDTO = new UserDTO(null, userRequest.getName().replaceAll("\\s+", " ").trim(),
                 userRequest.getEmail().trim().toLowerCase(), userRequest.getPassword(),
                 userRequest.getRole().trim().toUpperCase());
+
         String userId;
         do {
             userId = UUID.randomUUID().toString().split("-")[0];
         } while (userRepository.existsById(userId));
+
         String hashedPassword = passwordEncoder.encode(userDTO.getPassword() + userId);
+
         userDTO = UserDTO.builder()
                 .id(userId)
                 .name(userDTO.getName())
@@ -90,13 +92,9 @@ public class UserService {
         UserDTO userDTO = new UserDTO(null, userRequest.getName().replaceAll("\\s+", " ").trim(),
                 userRequest.getEmail().trim().toLowerCase(), userRequest.getPassword(),
                 userRequest.getRole().trim().toUpperCase());
-        Optional<User> user = userRepository.findById(userId);
-        String hashedPassword = null;
-        if (userDTO.getPassword() != null) {
-            hashedPassword = passwordEncoder.encode(userDTO.getPassword() + userId);
-        } else if (user.isPresent()) {
-            hashedPassword = user.get().getPassword();
-        }
+
+        String hashedPassword = passwordEncoder.encode(userDTO.getPassword() + userId);
+
         userDTO = UserDTO.builder()
                 .id(userId)
                 .name(userDTO.getName())
@@ -108,7 +106,12 @@ public class UserService {
     }
 
     public void deleteUser(String userId) {
-        // todo: delete user's products
+        Optional<List<Product>> products = productRepository.findByUserId(userId);
+        if (products.isPresent()) {
+            for (Product product : products.get()) {
+                productRepository.deleteById(product.getId());
+            }
+        }
         userRepository.deleteById(userId);
     }
 
