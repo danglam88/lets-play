@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -18,9 +17,6 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter extends OncePerRequestFilter {
 
-    @Value("${frontend.url}")
-    private String frontendUrl;
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response,
@@ -29,7 +25,7 @@ public class CorsFilter extends OncePerRequestFilter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin(frontendUrl);
+        config.addAllowedOrigin("*");
         config.addAllowedMethod("POST");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("PUT");
@@ -41,7 +37,7 @@ public class CorsFilter extends OncePerRequestFilter {
 
         source.registerCorsConfiguration("/**", config);
 
-        response.setHeader("Access-Control-Allow-Origin", frontendUrl);
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
         response.setHeader("Access-Control-Allow-Credentials", "true");
