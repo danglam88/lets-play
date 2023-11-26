@@ -15,24 +15,21 @@ This is a Java project that implements a basic CRUD (Create, Read, Update, Delet
 
 The application contains user management and product management functionalities.
 
-A user can have either the `ROLE_ADMIN` (called an admin) or the `ROLE_USER` (called a user) role.
+A user can have either the `ADMIN` (called an admin) or the `USER` (called a user) role.
 
-The list of RESTful APIs to perform CRUD operations on both Users and Products are:
+The list of REST APIs to perform CRUD operations on both Users and Products are:
 
 - POST `/auth` - Authenticate a user by their username (email) and password then return a 7-day valid token to them (accessible without authentication)
-- POST `/reg` - Register a new user with `ROLE_USER` role (accessible without authentication)
+- POST `/reg` - Register a new user with `ADMIN` or `USER` role (accessible without authentication)
 - GET `/products` - Get all products in the database (accessible without authentication)
 - GET `/products/{id}` - Get a product by its ID (accessible by an admin or a user)
 - POST `/products` - Create a new product (accessible by an admin only)
-- PUT `/products/{id}` - Update a product by its ID (accessible by an admin only)
-- DELETE `/products/{id}` - Delete a product by its ID (accessible by an admin only)
+- PUT `/products/{id}` - Update a product by its ID (accessible only by an admin who owns that product)
+- DELETE `/products/{id}` - Delete a product by its ID (accessible only by an admin who owns that product)
 - GET `/users` - Get all users in the database (accessible by an admin or a user)
-- GET `/users/{id}` - Get a user by their ID (accessible by an admin only)
-- POST `/users` - Create a new user (accessible by an admin only)
-- PUT `/users/{id}` - Update a user by its ID (accessible by an admin only)
-- DELETE `/users/{id}` - Delete a user by its ID (accessible by an admin only)
-- GET `/ownUserInfo` - Get the information of the currently authenticated user (accessible by an admin or a user)
-- GET `/ownProductInfo` - Get all products owned by the currently authenticated user (accessible by an admin or a user)
+- GET `/users/{id}` - Get a user by their ID (accessible by an admin or a user who owns that account)
+- PUT `/users/{id}` - Update a user by its ID (accessible by an admin or a user who owns that account)
+- DELETE `/users/{id}` - Delete a user by its ID (accessible by an admin or a user who owns that account)
 
 An example of a valid JSON object for creating a new / updating an existing product is:
 
@@ -51,8 +48,8 @@ An example of a valid JSON object for creating a new / updating an existing user
 {
     "name": "Name of User",
     "email": "abcxyz@gmail.com",
-    "password": "123456",
-    "role": "ROLE_ADMIN"
+    "password": "AbcXyz1@",
+    "role": "ADMIN"
 }
 ```
 
@@ -61,17 +58,7 @@ An example of a valid JSON object for authenticating a user is:
 ```json
 {
     "username": "abcxyz@gmail.com",
-    "password": "123456"
-}
-```
-
-An example of a valid JSON object for registering a new user is:
-
-```json
-{
-    "name": "Name of User",
-    "email": "abcxyz@gmail.com",
-    "password": "123456"
+    "password": "AbcXyz1@"
 }
 ```
 
@@ -80,7 +67,7 @@ An example of a valid JSON object for registering a new user is:
 To install the project, clone the repository to your local machine.
 
 ```bash
-git clone https://github.com/danglam88/LetsPlay.git
+git clone git@github.com:danglam88/lets-play.git
 ```
 
 Make sure you have Java and Maven installed and configured properly on your machine.
@@ -103,7 +90,7 @@ java -jar target/*.jar
 
 This will start the server at `https://localhost:8443/` and the above-mentioned APIs are ready for use.
 
-Postman is a great tool for testing RESTful APIs. You can download it [here](https://www.postman.com/downloads/).
+Postman is a great tool for testing REST APIs. You can download it [here](https://www.postman.com/downloads/).
 
 ## License
 
